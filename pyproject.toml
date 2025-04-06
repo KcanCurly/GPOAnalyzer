@@ -13,4 +13,4 @@ dependencies = [
 readme = "README.md"
 
 [project.scripts]
-blogcatcher = "blogcatcher.main:main"
+gpoanalyzer = "gpoanalyzer.main:main"
