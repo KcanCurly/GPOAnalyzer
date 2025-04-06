@@ -23,8 +23,8 @@ def main():
     dc_ip = args.dc_ip
 
     # Connect to the domain controller
-    server = Server(f"ldap://{dc_ip}", get_info=ALL)
-    conn = Connection(server, user=user, password=password, auto_bind=True)
+    server = Server(dc_ip, get_info=ALL)
+    conn = Connection(server, user=f"{domain}\\{user}", password=password, auto_bind=True)
 
     # Search for all Group Policy Objects
     base_dn = "CN=Policies,CN=System,DC=yourdomain,DC=local"
