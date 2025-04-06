@@ -43,7 +43,6 @@ def main():
         try:
             # Parse security descriptor using impacket
             sec_desc = dtypes.SECURITY_DESCRIPTOR(data=sd_raw)
-            print(sec_desc.getData())
             print(f"\n📁 GPO: {display_name}")
             print("🔐 Permissions:")
             pprint(sec_desc.__dict__)
@@ -51,6 +50,12 @@ def main():
             pprint(sec_desc["Control"])
             print("Dacl:")
             pprint(sec_desc["Dacl"].__dict__)
+            l = ["AceCount", "AceRevision", "AclSize", "Sbz1", "Sbz2"]
+            for i in l:
+                try:
+                    pprint(sec_desc["Dacl"][i].__dict__)
+                except Exception as e:
+                    print(f"Error parsing {i}: {e}")
             print("Group:")
             pprint(sec_desc["Group"].__dict__)
             print("Owner:")
