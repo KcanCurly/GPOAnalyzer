@@ -46,7 +46,7 @@ def main():
             print(f"\n📁 GPO: {display_name}")
             print("🔐 Permissions:")
             pprint(sec_desc.__dict__)
-            pprint(sec_desc["Control"].__dict__)
+            pprint(sec_desc["Control"])
             pprint(sec_desc["Dacl"].__dict__)
             pprint(sec_desc["Group"].__dict__)
             pprint(sec_desc["Owner"].__dict__)
