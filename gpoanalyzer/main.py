@@ -1,3 +1,4 @@
+from pprint import pprint
 from ldap3 import NTLM, Server, Connection, ALL
 from impacket.dcerpc.v5 import dtypes
 from impacket.structure import Structure
@@ -44,6 +45,6 @@ def main():
             sec_desc = dtypes.SECURITY_DESCRIPTOR(data=sd_raw)
             print(f"\n📁 GPO: {display_name}")
             print("🔐 Permissions:")
-            sec_desc['Dacl'].dump()
+            pprint(sec_desc)    
         except Exception as e:
             print(f"Error parsing security descriptor for {display_name}: {e}")
