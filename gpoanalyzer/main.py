@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument("--dc-ip", required=True, help="Domain Controller IP address")
     return parser.parse_args()
 
-if __name__ == "__main__":
+def main():
     args = parse_args()
 
     domain = args.domain
