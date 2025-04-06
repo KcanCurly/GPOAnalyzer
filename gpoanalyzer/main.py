@@ -27,7 +27,10 @@ def main():
     conn = Connection(server, user=f"{domain}\\{user}", password=password, authentication=NTLM, auto_bind=True)
 
     # Search for all Group Policy Objects
-    base_dn = "CN=Policies,CN=System,DC=sevenkingdoms,DC=local"
+    # We first build the base DN for the search
+    domain_parts = domain.split('.')
+    base_dn = ','.join([f"DC={part}" for part in domain_parts])
+    base_dn = "CN=Policies,CN=System," + base_dn
     conn.search(base_dn,
             '(objectClass=groupPolicyContainer)',
             attributes=["displayName", "nTSecurityDescriptor"])
