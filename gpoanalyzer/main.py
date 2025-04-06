@@ -18,7 +18,7 @@ def main():
     args = parse_args()
 
     domain = args.domain
-    user = f"{domain}\\{args.user}"
+    user = args.user
     password = args.password
     dc_ip = args.dc_ip
 
