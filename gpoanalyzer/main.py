@@ -45,6 +45,6 @@ def main():
             sec_desc = dtypes.SECURITY_DESCRIPTOR(data=sd_raw)
             print(f"\n📁 GPO: {display_name}")
             print("🔐 Permissions:")
-            pprint(sec_desc.__dict__())    
+            pprint(sec_desc.__dict__)    
         except Exception as e:
             print(f"Error parsing security descriptor for {display_name}: {e}")
