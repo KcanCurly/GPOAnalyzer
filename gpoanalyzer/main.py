@@ -43,6 +43,7 @@ def main():
         try:
             # Parse security descriptor using impacket
             sec_desc = dtypes.SECURITY_DESCRIPTOR(data=sd_raw)
+            print(sec_desc.getData())
             print(f"\n📁 GPO: {display_name}")
             print("🔐 Permissions:")
             pprint(sec_desc.__dict__)
@@ -59,6 +60,6 @@ def main():
             print("Sacl:")
             pprint(sec_desc["Sacl"].__dict__)
             print("Sbz1:")
-            pprint(sec_desc["Sbz1"].__dict__)
+            pprint(sec_desc["Sbz1"])
         except Exception as e:
             print(f"Error parsing security descriptor for {display_name}: {e}")
