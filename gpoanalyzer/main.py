@@ -86,7 +86,7 @@ def main():
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
         # print(f"Security: {entry.nTSecurityDescriptor}")
-        raw_ntsd_value = entry.nTSecurityDescriptor
+        raw_ntsd_value = entry.nTSecurityDescriptor.value
         if type(raw_ntsd_value) == list:
             raw_ntsd_value = raw_ntsd_value[0]
         ls = LDAPSearcher(
