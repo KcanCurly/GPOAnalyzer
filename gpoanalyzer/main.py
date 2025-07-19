@@ -5,7 +5,26 @@ from impacket.structure import Structure
 import base64
 import argparse
 
+def get_base_dn(ldap_server, user, password, domain):
+    server = ldap3.Server(ldap_server, get_info=ldap3.ALL)
+    conn = ldap3.Connection(server, user=f"{domain}\\{user}", password=password, auto_bind=True, authentication="NTLM")
 
+    # Query the RootDSE entry for naming contexts
+    conn.search(
+        search_base="",
+        search_scope=ldap3.BASE,
+        search_filter="(objectClass=*)",
+        attributes=["namingContexts"]
+    )
+
+    naming_contexts = conn.entries[0]["namingContexts"]
+
+    # Pick the first DN that looks like a domain (starts with "DC=")
+    for context in naming_contexts:
+        if str(context).startswith("DC="):
+            return str(context)
+
+    raise Exception("No valid base DN found")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Read GPO permissions from Active Directory.")
@@ -33,7 +52,7 @@ def main():
         search_scope=ldap3.BASE,
         attributes=['defaultNamingContext']
     )
-    base_dn = conn.entries[0]['defaultNamingContext'].value
+    base_dn = get_base_dn(dc_ip, user, password, domain)
     print(f"[+] Base DN: {base_dn}")
 
     # Query for all GPOs
