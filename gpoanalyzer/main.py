@@ -1,5 +1,5 @@
 from pprint import pprint
-from ldap3 import NTLM, Server, Connection, ALL
+import ldap3
 from impacket.dcerpc.v5 import dtypes
 from impacket.structure import Structure
 import base64
@@ -23,48 +23,29 @@ def main():
     password = args.password
     dc_ip = args.dc_ip
 
-    # Connect to the domain controller
-    server = Server(dc_ip, get_info=ALL)
-    conn = Connection(server, user=f"{domain}\\{user}", password=password, authentication=NTLM, auto_bind=True)
+    server = ldap3.Server(dc_ip, get_info=ldap3.ALL)
+    conn = ldap3.Connection(server, user=user, password=password, auto_bind=True)
 
-    # Search for all Group Policy Objects
-    # We first build the base DN for the search
-    domain_parts = domain.split('.')
-    base_dn = ','.join([f"DC={part}" for part in domain_parts])
-    base_dn = "CN=Policies,CN=System," + base_dn
-    conn.search(base_dn,
-            '(objectClass=groupPolicyContainer)',
-            attributes=["displayName", "nTSecurityDescriptor"])
+    # Fetch base DN from RootDSE
+    conn.search(
+        search_base='',
+        search_filter='(objectClass=*)',
+        search_scope=ldap3.BASE,
+        attributes=['defaultNamingContext']
+    )
+    base_dn = conn.entries[0]['defaultNamingContext'].value
+    print(f"[+] Base DN: {base_dn}")
+
+    # Query for all GPOs
+    conn.search(
+        search_base=base_dn,
+        search_filter='(objectClass=groupPolicyContainer)',
+        attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion']
+    )
 
     for entry in conn.entries:
-        display_name = entry.displayName.value
-        sd_raw = entry["nTSecurityDescriptor"].raw_values[0]  # Raw binary SD
-
-        try:
-            # Parse security descriptor using impacket
-            sec_desc = dtypes.SECURITY_DESCRIPTOR(data=sd_raw)
-            print(f"\n📁 GPO: {display_name}")
-            print("🔐 Permissions:")
-            pprint(sec_desc.__dict__)
-            print("Control:")
-            pprint(sec_desc["Control"])
-            print("Dacl:")
-            pprint(sec_desc["Dacl"].__dict__)
-            l = ["AceCount", "AceRevision", "AclSize", "Sbz1", "Sbz2"]
-            for i in l:
-                try:
-                    pprint(sec_desc["Dacl"][i].__dict__)
-                except Exception as e:
-                    print(f"Error parsing {i}: {e}")
-            print("Group:")
-            pprint(sec_desc["Group"].__dict__)
-            print("Owner:")
-            pprint(sec_desc["Owner"].__dict__)
-            print("Revision:")
-            pprint(sec_desc["Revision"])
-            print("Sacl:")
-            pprint(sec_desc["Sacl"].__dict__)
-            print("Sbz1:")
-            pprint(sec_desc["Sbz1"])
-        except Exception as e:
-            print(f"Error parsing security descriptor for {display_name}: {e}")
+        print(f"GPO: {entry.displayName}")
+        print(f"CN: {entry.cn}")
+        print(f"Path: {entry.gPCFileSysPath}")
+        print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
+        print("------")
