@@ -93,6 +93,7 @@ def main():
             ldap_server=dc_ip,
             ldap_session=conn
         )
+        print(type(raw_ntsd_value))
         ntsd = NTSecurityDescriptor(
             value=raw_ntsd_value,
             verbose=False,
