@@ -1,9 +1,12 @@
+import binascii
 from pprint import pprint
 import ldap3
 from impacket.dcerpc.v5 import dtypes
 from impacket.structure import Structure
 import base64
 import argparse
+
+from gpoanalyzer.DescribeNTSecurityDescriptor import HumanDescriber, LDAPSearcher, NTSecurityDescriptor
 
 def get_base_dn_anonymous(ldap_server):
     server = ldap3.Server(ldap_server, get_info=ldap3.ALL)
@@ -83,4 +86,18 @@ def main():
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
         print(f"Security: {entry.nTSecurityDescriptor}")
+        raw_ntsd_value = binascii.unhexlify(raw_ntsd_value)
+        if type(raw_ntsd_value) == list:
+            raw_ntsd_value = raw_ntsd_value[0]
+        ls = LDAPSearcher(
+            ldap_server=dc_ip,
+            ldap_session=conn
+        )
+        ntsd = NTSecurityDescriptor(
+            value=raw_ntsd_value,
+            verbose=False,
+            ldap_searcher=ls
+        )
+        print("\n" + "==[Summary]".ljust(80,'=') + "\n")
+        HumanDescriber(ntsd=ntsd).summary()
         print("------")
