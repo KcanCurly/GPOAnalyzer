@@ -90,7 +90,7 @@ def main():
         if type(raw_ntsd_value) == list:
             raw_ntsd_value = raw_ntsd_value[0]
         ls = LDAPSearcher(
-            ldap_server=dc_ip,
+            ldap_server=server,
             ldap_session=conn
         )
         print(type(raw_ntsd_value))
