@@ -85,8 +85,8 @@ def main():
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
-        print(f"Security: {entry.nTSecurityDescriptor}")
-        raw_ntsd_value = binascii.unhexlify(raw_ntsd_value)
+        # print(f"Security: {entry.nTSecurityDescriptor}")
+        raw_ntsd_value = entry.nTSecurityDescriptor
         if type(raw_ntsd_value) == list:
             raw_ntsd_value = raw_ntsd_value[0]
         ls = LDAPSearcher(
