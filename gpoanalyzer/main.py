@@ -74,7 +74,7 @@ def main():
     conn.search(
         search_base=base_dn,
         search_filter='(objectClass=groupPolicyContainer)',
-        attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion']
+        attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
     )
 
     for entry in conn.entries:
@@ -82,4 +82,5 @@ def main():
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
+        print(f"Security: {entry.nTSecurityDescriptor}")
         print("------")
