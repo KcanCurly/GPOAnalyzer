@@ -24,7 +24,7 @@ def main():
     dc_ip = args.dc_ip
 
     server = ldap3.Server(dc_ip, get_info=ldap3.ALL)
-    conn = ldap3.Connection(server, user=f"{user}@{domain}", password=password, auto_bind=True, authentication="NTLM")
+    conn = ldap3.Connection(server, user=f"{domain}\\{user}", password=password, auto_bind=True, authentication="NTLM")
 
     # Fetch base DN from RootDSE
     conn.search(
