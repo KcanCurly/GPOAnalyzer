@@ -5,9 +5,31 @@ from impacket.structure import Structure
 import base64
 import argparse
 
-def get_base_dn(ldap_server, user, password, domain):
+def get_base_dn_anonymous(ldap_server):
     server = ldap3.Server(ldap_server, get_info=ldap3.ALL)
-    conn = ldap3.Connection(server, user=f"{domain}\\{user}", password=password, auto_bind=True, authentication="NTLM")
+    conn = ldap3.Connection(server, auto_bind=True, authentication="ANONYMOUS")
+
+    conn.search(
+        search_base="",
+        search_scope=ldap3.BASE,
+        search_filter="(objectClass=*)",
+        attributes=["namingContexts"]
+    )
+
+    naming_contexts = conn.entries[0]["namingContexts"]
+    for context in naming_contexts:
+        if str(context).startswith("DC="):
+            base_dn = str(context)
+            # Extract NetBIOS-style domain (e.g., DC=curlylab,DC=local -> curlylab)
+            domain_name = ".".join(part.split("=")[1] for part in base_dn.split(","))
+            return base_dn, domain_name
+
+    raise Exception("Base DN not found")
+
+def get_base_dn(ldap_server, user, password, domain):
+    base_dn, domain_name = get_base_dn_anonymous(ldap_server)
+    server = ldap3.Server(ldap_server, get_info=ldap3.ALL)
+    conn = ldap3.Connection(server, user=f"{domain_name}\\{user}", password=password, auto_bind=True, authentication="NTLM")
 
     # Query the RootDSE entry for naming contexts
     conn.search(
