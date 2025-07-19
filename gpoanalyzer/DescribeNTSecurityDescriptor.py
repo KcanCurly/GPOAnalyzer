@@ -978,7 +978,7 @@ class GroupSID(object):
         # Try to resolve it from the LDAP
         if self.displayName is None:
             if self.ldap_searcher is not None:
-                search_base = ldap_server.info.other["defaultNamingContext"][0]
+                search_base = self.ldap_searcher.ldap_server.info.other["defaultNamingContext"][0]
                 ldap_results = self.ldap_searcher.query(
                     base_dn=search_base,
                     query="(objectSid=%s)" % self.sid.toString(),
