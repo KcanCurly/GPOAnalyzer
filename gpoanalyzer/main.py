@@ -119,6 +119,6 @@ def main():
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
-        smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', "WINTERFELL", is_direct_tcp=True)
+        smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', "", is_direct_tcp=True)
         if smb_conn.connect(args.host, 445):
             print("yay")
