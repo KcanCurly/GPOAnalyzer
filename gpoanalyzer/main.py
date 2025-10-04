@@ -5,7 +5,6 @@ from ldap3.core.exceptions import LDAPBindError
 import ssl
 import socket
 import traceback
-from gpoanalyzer.DescribeNTSecurityDescriptor import HumanDescriber, LDAPSearcher, NTSecurityDescriptor
 
 def create_ldap_server(server, use_ssl):
     if use_ssl:
@@ -100,11 +99,6 @@ def parse_args():
 def main():
     args = parse_args()
 
-    domain = args.domain
-    user = args.user
-    password = args.password
-    dc_ip = args.dc_ip
-
     conn = get_connection(args.host, args.domain, args.username, args.password)
     if not conn:
         print("LDAP connection failed")
@@ -134,20 +128,3 @@ def main():
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
-        # print(f"Security: {entry.nTSecurityDescriptor}")
-        raw_ntsd_value = entry.nTSecurityDescriptor.value
-        if type(raw_ntsd_value) == list:
-            raw_ntsd_value = raw_ntsd_value[0]
-        ls = LDAPSearcher(
-            ldap_server=create_ldap_server(args.host, False),
-            ldap_session=conn
-        )
-        print(type(raw_ntsd_value))
-        ntsd = NTSecurityDescriptor(
-            value=raw_ntsd_value,
-            verbose=False,
-            ldap_searcher=ls
-        )
-        print("\n" + "==[Summary]".ljust(80,'=') + "\n")
-        HumanDescriber(ntsd=ntsd).summary()
-        print("------")
