@@ -115,7 +115,9 @@ def main():
     )
 
     smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', '', is_direct_tcp=True)
-    smb_conn.connect(args.host, 445)
+
+    if smb_conn.connect(args.host, 445):
+        print("YAY")
     smb_conn.listPath("SYSVOL", "\\")
 
     for entry in conn.entries:
