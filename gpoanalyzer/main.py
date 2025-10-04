@@ -140,7 +140,7 @@ def main():
                     for v in pol.values:
                         print(v.__dict__)
             except Exception as e:
-                print(e)
+                pass
 
 
             path = o_path + "/Machine/Registry.pol"
@@ -153,7 +153,7 @@ def main():
                         print(v.__dict__)
 
             except Exception as e:
-                print(e)
+                pass
 
 
         except Exception:
