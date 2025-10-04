@@ -133,7 +133,7 @@ def main():
             o_path = path.replace("\\", "/")
             try:
                 path = o_path + "/" + "User/Registry.pol"
-                with tempfile.NamedTemporaryFile() as tmp:
+                with tempfile.NamedTemporaryFile("wb+") as tmp:
                     smb_conn.retrieveFile(sharename, path, tmp)
                     pol = registrypol.load(tmp)
                     print(pol.values)   
