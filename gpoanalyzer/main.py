@@ -7,6 +7,7 @@ import socket
 import traceback
 import registrypol
 from smb import SMBConnection as pysmbconn
+import tempfile
 
 def create_ldap_server(server, use_ssl):
     if use_ssl:
@@ -134,17 +135,24 @@ def main():
             print([f.filename for f in files])
             files = smb_conn.listPath("SYSVOL", path + "\\Machine")
             print([f.filename for f in files])
-            path = path.replace("\\", "/")
+            o_path = path.replace("\\", "/")
+            try:
+                path = o_path + "/" + "User/Registry.pol"
+                with tempfile.NamedTemporaryFile() as tmp:
+                    smb_conn.retrieveFile(sharename, path, tmp)
+                    pol = registrypol.load(tmp)
+                    print(pol.values)   
+            except Exception:
+                pass
 
-            path = path + "/" + "User/Registry.pol"
-            filename = filename + "-User"
-            with open(filename, "wb") as f:
-                smb_conn.retrieveFile(sharename, path, f)
-
-            path = path + "/" + "Machine/Registry.pol"
-            filename = filename + "-Machine"
-            with open(filename, "wb") as f:
-                smb_conn.retrieveFile(sharename, path, f)
+            path = o_path + "/" + "Machine/Registry.pol"
+            try:
+                with tempfile.NamedTemporaryFile() as tmp:
+                    smb_conn.retrieveFile(sharename, path, tmp)
+                    pol = registrypol.load(tmp)
+                    print(pol.values)
+            except Exception:
+                pass
 
         except Exception:
             pass
