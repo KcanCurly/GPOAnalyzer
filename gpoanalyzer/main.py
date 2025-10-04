@@ -135,8 +135,9 @@ def main():
                 path = o_path + "/User/Registry.pol"
                 with open(filename + "-User", "wb+") as tmp:
                     smb_conn.retrieveFile(sharename, path, tmp)
-                    pol = registrypol.load(tmp)
-                    print(pol.values)   
+                with open(filename + "-User", "rb") as f:
+                    pol = registrypol.load(f)
+                    print(pol.values)
             except Exception as e:
                 print(e)
 
@@ -145,7 +146,8 @@ def main():
             try:
                 with open(filename + "-Machine", "wb+") as tmp:
                     smb_conn.retrieveFile(sharename, path, tmp)
-                    pol = registrypol.load(tmp)
+                with open(filename + "-Machine", "rb") as f:
+                    pol = registrypol.load(f)
                     print(pol.values)
 
             except Exception as e:
