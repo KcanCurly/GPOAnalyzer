@@ -90,7 +90,6 @@ def get_base_dn(ldap_server, user, password, domain):
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Read GPO permissions from Active Directory.")
-    parser.add_argument("--domain", required=True, help="Domain name (e.g. yourdomain.local)")
     parser.add_argument("--username", required=True, help="Username (without domain)")
     parser.add_argument("--password", required=True, help="Password")
     parser.add_argument("--host", required=True, help="Domain Controller IP address")
@@ -99,47 +98,22 @@ def parse_args():
 def main():
     args = parse_args()
 
-    s, n = get_base_dn_anonymous(args.host)
-    print(s, n)
+    base_dn, domain = get_base_dn_anonymous(args.host)
 
-    conn = get_connection(args.host, args.domain, args.username, args.password)
+    conn = get_connection(args.host, domain, args.username, args.password)
     if not conn:
         print("LDAP connection failed")
         return
-    
+
+    # Query for all GPOs
     conn.search(
-        search_base='',
-        search_filter='(objectClass=*)',
-        search_scope='BASE',
-        attributes=['*', '+']  # '+' gets operational attributes like schemaNamingContext
+        search_base=base_dn,
+        search_filter='(objectClass=groupPolicyContainer)',
+        attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
     )
 
-    rootdse = conn.entries[0]
-
-    schema_dn = rootdse.schemaNamingContext.value
-    print(f"[+] Base DN: {schema_dn}")
-
-    conn.search(
-        search_base="",
-        search_scope=ldap3.BASE,
-        search_filter="(objectClass=*)",
-        attributes=['namingContexts']
-    )
-
-    naming_contexts = conn.entries[0]["namingContexts"]
-    print(naming_contexts)
-
-    for n in naming_contexts:
-        print(n)
-        # Query for all GPOs
-        conn.search(
-            search_base=n,
-            search_filter='(objectClass=groupPolicyContainer)',
-            attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
-        )
-
-        for entry in conn.entries:
-            print(f"GPO: {entry.displayName}")
-            print(f"CN: {entry.cn}")
-            print(f"Path: {entry.gPCFileSysPath}")
-            print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
+    for entry in conn.entries:
+        print(f"GPO: {entry.displayName}")
+        print(f"CN: {entry.cn}")
+        print(f"Path: {entry.gPCFileSysPath}")
+        print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
