@@ -1,12 +1,50 @@
-import binascii
-from pprint import pprint
 import ldap3
-from impacket.dcerpc.v5 import dtypes
-from impacket.structure import Structure
-import base64
 import argparse
-
+from ldap3 import ALL, NTLM, Connection, Server, SUBTREE, Tls
+from ldap3.core.exceptions import LDAPBindError
+import ssl
+import socket
+import traceback
 from gpoanalyzer.DescribeNTSecurityDescriptor import HumanDescriber, LDAPSearcher, NTSecurityDescriptor
+
+def create_ldap_server(server, use_ssl):
+    if use_ssl:
+        tls = Tls(validate=ssl.CERT_NONE)
+        return Server(server, use_ssl=True, tls=tls, get_info=ALL)
+    return Server(server, get_info=ALL)
+
+def get_connection(server, domain, user, password):
+    conn = None
+    try:
+        try:
+            server = create_ldap_server(server, True)
+            conn = Connection(
+                server,
+                user=f"{domain}\\{user}",
+                password=password,
+                authentication=NTLM,
+                channel_binding="TLS_CHANNEL_BINDING",
+                auto_bind=True,
+                auto_range=True,
+            )
+            print("Connecting using ntlm - channel binding")
+        except (ssl.SSLError, socket.error, LDAPBindError) as e:
+            print("1", e)
+            server = create_ldap_server(server, False)
+            conn = Connection(
+                server,
+                user=f"{domain}\\{user}",
+                password=password,
+                authentication=NTLM,
+                auto_bind=True,
+                auto_range=True,
+            )
+            print("Connecting using ntlm")
+    except Exception as e:
+        print("2", e)
+        traceback.print_exc() 
+        return None
+    return conn
 
 def get_base_dn_anonymous(ldap_server):
     server = ldap3.Server(ldap_server, get_info=ldap3.ALL)
@@ -56,7 +94,7 @@ def parse_args():
     parser.add_argument("--domain", required=True, help="Domain name (e.g. yourdomain.local)")
     parser.add_argument("--user", required=True, help="Username (without domain)")
     parser.add_argument("--password", required=True, help="Password")
-    parser.add_argument("--dc-ip", required=True, help="Domain Controller IP address")
+    parser.add_argument("--host", required=True, help="Domain Controller IP address")
     return parser.parse_args()
 
 def main():
@@ -67,15 +105,26 @@ def main():
     password = args.password
     dc_ip = args.dc_ip
 
-    server = ldap3.Server(dc_ip, get_info=ldap3.ALL)
-    conn = ldap3.Connection(server, user=f"{domain}\\{user}", password=password, auto_bind=True, authentication="NTLM")
+    conn = get_connection(args.host, args.domain, args.username, args.password)
+    if not conn:
+        print("LDAP connection failed")
+        return
+    
+    conn.search(
+        search_base='',
+        search_filter='(objectClass=*)',
+        search_scope='BASE',
+        attributes=['*', '+']  # '+' gets operational attributes like schemaNamingContext
+    )
 
-    base_dn = get_base_dn(dc_ip, user, password, domain)
-    print(f"[+] Base DN: {base_dn}")
+    rootdse = conn.entries[0]
+
+    schema_dn = rootdse.schemaNamingContext.value
+    print(f"[+] Base DN: {schema_dn}")
 
     # Query for all GPOs
     conn.search(
-        search_base=base_dn,
+        search_base=schema_dn,
         search_filter='(objectClass=groupPolicyContainer)',
         attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
     )
@@ -90,7 +139,7 @@ def main():
         if type(raw_ntsd_value) == list:
             raw_ntsd_value = raw_ntsd_value[0]
         ls = LDAPSearcher(
-            ldap_server=server,
+            ldap_server=create_ldap_server(args.host, False),
             ldap_session=conn
         )
         print(type(raw_ntsd_value))
