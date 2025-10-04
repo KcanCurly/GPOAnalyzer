@@ -116,6 +116,16 @@ def main():
     schema_dn = rootdse.schemaNamingContext.value
     print(f"[+] Base DN: {schema_dn}")
 
+    conn.search(
+        search_base="",
+        search_scope=ldap3.BASE,
+        search_filter="(objectClass=*)",
+        attributes=["namingContexts"]
+    )
+
+    naming_contexts = conn.entries[0]["namingContexts"]
+    print(naming_contexts)
+
     # Query for all GPOs
     conn.search(
         search_base=schema_dn,
