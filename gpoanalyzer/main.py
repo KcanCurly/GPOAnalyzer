@@ -120,21 +120,22 @@ def main():
         search_base="",
         search_scope=ldap3.BASE,
         search_filter="(objectClass=*)",
-        attributes=["defaultNamingContext"]
     )
 
-    naming_contexts = conn.entries[0]
+    naming_contexts = conn.entries[0]["namingContexts"]
     print(naming_contexts)
 
-    # Query for all GPOs
-    conn.search(
-        search_base=schema_dn,
-        search_filter='(objectClass=groupPolicyContainer)',
-        attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
-    )
+    for n in naming_contexts:
 
-    for entry in conn.entries:
-        print(f"GPO: {entry.displayName}")
-        print(f"CN: {entry.cn}")
-        print(f"Path: {entry.gPCFileSysPath}")
-        print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
+        # Query for all GPOs
+        conn.search(
+            search_base=n,
+            search_filter='(objectClass=groupPolicyContainer)',
+            attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
+        )
+
+        for entry in conn.entries:
+            print(f"GPO: {entry.displayName}")
+            print(f"CN: {entry.cn}")
+            print(f"Path: {entry.gPCFileSysPath}")
+            print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
