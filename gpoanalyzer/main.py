@@ -130,7 +130,9 @@ def main():
             _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
             
 
-            files = smb_conn.listPath("SYSVOL", path)
+            files = smb_conn.listPath("SYSVOL", path + "\\User")
+            print([f.filename for f in files])
+            files = smb_conn.listPath("SYSVOL", path + "\\Machine")
             print([f.filename for f in files])
             path = path.replace("\\", "/")
 
