@@ -130,11 +130,6 @@ def main():
             _, filename = entry.gPCFileSysPath.value.rsplit("\\", 1)
             _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
             
-
-            files = smb_conn.listPath("SYSVOL", path + "\\User")
-            print([f.filename for f in files])
-            files = smb_conn.listPath("SYSVOL", path + "\\Machine")
-            print([f.filename for f in files])
             o_path = path.replace("\\", "/")
             try:
                 path = o_path + "/" + "User/Registry.pol"
@@ -147,10 +142,11 @@ def main():
 
             path = o_path + "/" + "Machine/Registry.pol"
             try:
-                with tempfile.NamedTemporaryFile() as tmp:
+                with tempfile.NamedTemporaryFile("wb+") as tmp:
                     smb_conn.retrieveFile(sharename, path, tmp)
                     pol = registrypol.load(tmp)
                     print(pol.values)
+
             except Exception:
                 pass
 
