@@ -114,7 +114,7 @@ def main():
         attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
     )
 
-    smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', '', is_direct_tcp=True)
+    smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', 'WINTERFELL', is_direct_tcp=True)
 
     if smb_conn.connect(args.host, 445):
         print("YAY")
