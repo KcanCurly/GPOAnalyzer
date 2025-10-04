@@ -122,17 +122,26 @@ def main():
     print([f.filename for f in files])
 
     for entry in conn.entries:
-        print(f"GPO: {entry.displayName}")
-        print(f"CN: {entry.cn}")
-        print(f"Path: {entry.gPCFileSysPath}")
-        print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
+        try:
+            print(f"GPO: {entry.displayName}")
+            print(f"CN: {entry.cn}")
+            print(f"Path: {entry.gPCFileSysPath}")
+            print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
 
-        _, filename = entry.gPCFileSysPath.value.rsplit("\\", 1)
-        _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
-        print(sharename)
-        print(path)
-        path = path.replace("\\", "/")
+            _, filename = entry.gPCFileSysPath.value.rsplit("\\", 1)
+            _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
+            path = path.replace("\\", "/")
 
-        with open(filename, "wb") as f:
-            smb_conn.retrieveFile(sharename, path, f)
+            path = path + "/" + "User/Registry.pol"
+            filename = filename + "-User"
+            with open(filename, "wb") as f:
+                smb_conn.retrieveFile(sharename, path, f)
+
+            path = path + "/" + "Machine/Registry.pol"
+            filename = filename + "-Machine"
+            with open(filename, "wb") as f:
+                smb_conn.retrieveFile(sharename, path, f)
+
+        except Exception:
+            pass
 
