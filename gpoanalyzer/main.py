@@ -122,11 +122,12 @@ def main():
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
-        print
+
         _, filename = entry.gPCFileSysPath.value.rsplit("\\", 1)
         _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
         print(sharename)
         print(path)
+        path = "\\" + path
         with open(filename, "wb") as f:
             smb_conn.retrieveFile(sharename, path, f)
 
