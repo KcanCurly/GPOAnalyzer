@@ -91,7 +91,7 @@ def get_base_dn(ldap_server, user, password, domain):
 def parse_args():
     parser = argparse.ArgumentParser(description="Read GPO permissions from Active Directory.")
     parser.add_argument("--domain", required=True, help="Domain name (e.g. yourdomain.local)")
-    parser.add_argument("--user", required=True, help="Username (without domain)")
+    parser.add_argument("--username", required=True, help="Username (without domain)")
     parser.add_argument("--password", required=True, help="Password")
     parser.add_argument("--host", required=True, help="Domain Controller IP address")
     return parser.parse_args()
