@@ -116,6 +116,7 @@ def main():
 
     smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', '', is_direct_tcp=True)
     smb_conn.connect(args.host, 445)
+    smb_conn.listPath("sysvol", "\\")
 
     for entry in conn.entries:
         print(f"GPO: {entry.displayName}")
