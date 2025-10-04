@@ -118,7 +118,7 @@ def main():
 
     if smb_conn.connect(args.host, 445):
         print("YAY")
-    files = smb_conn.listPath("SYSVOL", "\\")
+    
     print([f.filename for f in files])
 
     for entry in conn.entries:
@@ -130,6 +130,10 @@ def main():
 
             _, filename = entry.gPCFileSysPath.value.rsplit("\\", 1)
             _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
+            
+
+            files = smb_conn.listPath("SYSVOL", path)
+            print([f.filename for f in files])
             path = path.replace("\\", "/")
 
             path = path + "/" + "User/Registry.pol"
