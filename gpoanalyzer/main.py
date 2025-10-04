@@ -122,8 +122,9 @@ def main():
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
+        print
         _, filename = entry.gPCFileSysPath.value.rsplit("\\", 1)
-        _, sharename, path = entry.gPCFileSysPath.value.split("\\", 2)
+        _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
         print(sharename)
         print(path)
         with open(filename, "wb") as f:
