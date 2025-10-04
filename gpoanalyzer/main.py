@@ -127,7 +127,7 @@ def main():
     print(naming_contexts)
 
     for n in naming_contexts:
-
+        print(n)
         # Query for all GPOs
         conn.search(
             search_base=n,
