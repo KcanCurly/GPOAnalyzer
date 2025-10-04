@@ -119,7 +119,7 @@ def main():
     if smb_conn.connect(args.host, 445):
         print("YAY")
     files = smb_conn.listPath("SYSVOL", "\\")
-    print(f.filename for f in files)
+    print([f.filename for f in files])
 
     for entry in conn.entries:
         print(f"GPO: {entry.displayName}")
