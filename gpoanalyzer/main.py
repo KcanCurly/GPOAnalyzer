@@ -5,6 +5,8 @@ from ldap3.core.exceptions import LDAPBindError
 import ssl
 import socket
 import traceback
+import registrypol
+from smb import SMBConnection as pysmbconn
 
 def create_ldap_server(server, use_ssl):
     if use_ssl:
@@ -117,3 +119,4 @@ def main():
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
+        conn = pysmbconn.SMBConnection('guest', '', '', "WINTERFELL", is_direct_tcp=True)

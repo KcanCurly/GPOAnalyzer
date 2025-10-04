@@ -9,6 +9,8 @@ requires-python = ">= 3.12"
 dependencies = [
   "ldap3 @ git+https://github.com/cannatag/ldap3",
   "cryptography",
+  "pysmb",
+  "registrypol",
 ]
 readme = "README.md"
 
