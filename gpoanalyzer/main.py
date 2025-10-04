@@ -124,6 +124,8 @@ def main():
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
         _, filename = entry.gPCFileSysPath.value.rsplit("\\", 1)
         _, sharename, path = entry.gPCFileSysPath.value.split("\\", 2)
+        print(sharename)
+        print(path)
         with open(filename, "wb") as f:
             smb_conn.retrieveFile(sharename, path, f)
 
