@@ -7,9 +7,8 @@ name = "GPOAnalyzer"
 dynamic = ["version"]
 requires-python = ">= 3.12"
 dependencies = [
-  "ldap3",
-  "impacket",
-  "sectools",
+  "ldap3 @ git+https://github.com/cannatag/ldap3",
+  "cryptography",
 ]
 readme = "README.md"
 
