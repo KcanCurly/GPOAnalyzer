@@ -114,11 +114,16 @@ def main():
         attributes=['displayName', 'cn', 'gPCFileSysPath', 'gPCFunctionalityVersion', "nTSecurityDescriptor"]
     )
 
+    smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', '', is_direct_tcp=True)
+    smb_conn.connect(args.host, 445)
+
     for entry in conn.entries:
         print(f"GPO: {entry.displayName}")
         print(f"CN: {entry.cn}")
         print(f"Path: {entry.gPCFileSysPath}")
         print(f"Functionality Version: {entry.gPCFunctionalityVersion}")
-        smb_conn = pysmbconn.SMBConnection(args.username, args.password, '', "", is_direct_tcp=True)
-        if smb_conn.connect(args.host, 445):
-            print("yay")
+        _, filename = entry.gPCFileSysPath.rsplit("/", 1)
+        _, sharename, path = entry.gPCFileSysPath.split("/", 2)
+        with open(filename, "w") as f:
+            smb_conn.retrieveFile(sharename, path, f)
+
