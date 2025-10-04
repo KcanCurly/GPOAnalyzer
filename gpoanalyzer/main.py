@@ -120,6 +120,7 @@ def main():
         search_base="",
         search_scope=ldap3.BASE,
         search_filter="(objectClass=*)",
+        attributes=['namingContexts']
     )
 
     naming_contexts = conn.entries[0]["namingContexts"]
