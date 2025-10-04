@@ -99,6 +99,9 @@ def parse_args():
 def main():
     args = parse_args()
 
+    s, n = get_base_dn_anonymous(args.host)
+    print(s, n)
+
     conn = get_connection(args.host, args.domain, args.username, args.password)
     if not conn:
         print("LDAP connection failed")
