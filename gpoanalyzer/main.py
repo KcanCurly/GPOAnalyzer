@@ -120,10 +120,10 @@ def main():
         search_base="",
         search_scope=ldap3.BASE,
         search_filter="(objectClass=*)",
-        attributes=["namingContexts"]
+        attributes=["defaultNamingContext"]
     )
 
-    naming_contexts = conn.entries[0]["namingContexts"]
+    naming_contexts = conn.entries[0]
     print(naming_contexts)
 
     # Query for all GPOs
