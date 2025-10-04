@@ -131,6 +131,7 @@ def main():
         _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
         print(sharename)
         print(path)
+        path = path.replace("\\", "/")
 
         with open(filename, "wb") as f:
             smb_conn.retrieveFile(sharename, path, f)
