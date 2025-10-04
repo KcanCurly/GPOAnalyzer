@@ -137,7 +137,8 @@ def main():
                     smb_conn.retrieveFile(sharename, path, tmp)
                 with open(filename + "-User", "rb") as f:
                     pol = registrypol.load(f)
-                    print(pol.values)
+                    for v in pol.values:
+                        print(v.__dict__)
             except Exception as e:
                 print(e)
 
@@ -148,7 +149,8 @@ def main():
                     smb_conn.retrieveFile(sharename, path, tmp)
                 with open(filename + "-Machine", "rb") as f:
                     pol = registrypol.load(f)
-                    print(pol.values)
+                    for v in pol.values:
+                        print(v.__dict__)
 
             except Exception as e:
                 print(e)
