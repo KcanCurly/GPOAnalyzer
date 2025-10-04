@@ -118,8 +118,6 @@ def main():
 
     if smb_conn.connect(args.host, 445):
         print("YAY")
-    
-    print([f.filename for f in files])
 
     for entry in conn.entries:
         try:
