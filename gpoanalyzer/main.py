@@ -118,7 +118,8 @@ def main():
 
     if smb_conn.connect(args.host, 445):
         print("YAY")
-    smb_conn.listPath("SYSVOL", "\\")
+    files = smb_conn.listPath("SYSVOL", "\\")
+    print(files)
 
     for entry in conn.entries:
         print(f"GPO: {entry.displayName}")
@@ -130,7 +131,7 @@ def main():
         _,_, _, sharename, path = entry.gPCFileSysPath.value.split("\\", 4)
         print(sharename)
         print(path)
-        path = "\\" + path
+
         with open(filename, "wb") as f:
             smb_conn.retrieveFile(sharename, path, f)
 
